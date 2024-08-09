@@ -18,11 +18,37 @@ We indicate this respectively
 The benchmarks are given in the following formats
 * RPG-Format: Format for Reactive Program Games introduced in [HD24]
 
-
-|Name              |Source    |RPG-Format        |
-|------------------|----------|------------------|
-|                  |          |:heavy_check_mark:|
-|                  |          |                  |
+|Name                                  |Source    |RPG-Format        |
+|--------------------------------------|----------|------------------|
+|bm22-elevator-signal-3                | BM23     |:heavy_check_mark:|
+|bm22-elevator-signal-4                | BM23     |:heavy_check_mark:|
+|bm22-elevator-signal-5                | BM23     |:heavy_check_mark:|
+|bm22-elevator-simple-10               | BM23     |:heavy_check_mark:|
+|bm22-elevator-simple-3                | BM23     |:heavy_check_mark:|
+|bm22-elevator-simple-4                | BM23     |:heavy_check_mark:|
+|bm22-elevator-simple-5                | BM23     |:heavy_check_mark:|
+|bm22-elevator-simple-8                | BM23     |:heavy_check_mark:|
+|bm22-watertank-double-safety          | BM23     |:heavy_check_mark:|
+|bm22-watertank-single-liveness        | BM23     |:heavy_check_mark:|
+|hd24-robot-cat-real-1d                | HD24     |:heavy_check_mark:|
+|hd24-robot-cat-real-2d                | HD24     |:heavy_check_mark:|
+|hd24-robot-cat-unreal-1d              | HD24     |:heavy_check_mark:|
+|hd24-robot-cat-unreal-2d              | HD24     |:heavy_check_mark:|
+|hd24-robot-continuous-comute-1d       | HD24     |:heavy_check_mark:|
+|hd24-robot-continuous-comute-2d       | HD24     |:heavy_check_mark:|
+|hd24-robot-continuous-reach-1d        | HD24     |:heavy_check_mark:|
+|hd24-robot-continuous-reach-2d        | HD24     |:heavy_check_mark:|
+|hd24-robot-continuous-reach-unreal-1d | HD24     |:heavy_check_mark:|
+|hd24-robot-continuous-reach-unreal-2d | HD24     |:heavy_check_mark:|
+|hd24-robot-grid-comute-1d             | HD24     |:heavy_check_mark:|
+|hd24-robot-grid-comute-2d             | HD24     |:heavy_check_mark:|
+|hd24-robot-grid-reach-1d              | HD24     |:heavy_check_mark:|
+|hd24-robot-grid-reach-2d              | HD24     |:heavy_check_mark:|
+|hd24-robot-resource-1d                | HD24     |:heavy_check_mark:|
+|hd24-robot-resource-2d                | HD24     |:heavy_check_mark:|
+|hd24-warehouse-clean                  | HD24     |:heavy_check_mark:|
+|hd24-warehouse-empty                  | HD24     |:heavy_check_mark:|
+|hd24-warehouse-stock                  | HD24     |:heavy_check_mark:|
 
 # TODOs
 

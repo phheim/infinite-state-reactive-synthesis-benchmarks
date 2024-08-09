@@ -1,0 +1,34 @@
+type Buechi
+
+output x Real
+
+loc i 0
+loc okay 1
+loc fill 0
+loc safe 1
+loc unsafe 1
+
+init i
+
+trans i 
+    if (or (< x 0.0) (>= x 0.7)) then safe else okay ; Initial condtion
+
+trans okay
+    if (or (< x 0.0) (>= x 0.7)) then unsafe else ; Invaraint to guarantee
+    if (< x 0.1) then fill else
+        sys (
+            ((x (* 0.9635 x))) okay
+            ((x (+ (* 0.9635 x) 0.1))) okay
+        )
+
+trans fill
+    if (or (< x 0.0) (>= x 0.7)) then unsafe else
+    if (> x 0.4) then okay else
+        sys (
+            ((x (* 0.9635 x))) fill
+            ((x (+ (* 0.9635 x) 0.1))) fill
+        )
+
+trans safe safe 
+trans unsafe unsafe
+

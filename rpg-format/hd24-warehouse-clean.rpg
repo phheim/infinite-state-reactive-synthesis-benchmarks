@@ -1,0 +1,130 @@
+type Buechi
+
+input dist Real 
+
+output energy Real
+output select BInt ; Works as an enum
+
+loc safe 1 
+loc unsafe 0
+
+loc idle 1
+loc canIdle 0
+loc charge 0
+loc floor0 0
+loc floor1 0
+loc floor2 0
+loc floor3 0
+loc trap 0 
+
+loc clean0 0
+loc clean1 0
+loc clean2 0
+loc clean3 0
+
+input goClean0 Bool
+input goClean1 Bool
+input goClean2 Bool
+input goClean3 Bool
+
+output hasToClean0 Bool
+output hasToClean1 Bool
+output hasToClean2 Bool
+output hasToClean3 Bool
+
+
+init charge
+
+trans idle
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys ( 
+        ((energy (- energy dist)) (select 0)) canIdle
+        ((energy (- energy dist)) (select 1)) floor0
+    )
+
+trans canIdle
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    if(or hasToClean0 hasToClean1 hasToClean2 hasToClean3) then
+    sys (
+        ((energy (- energy dist))) floor0
+    )
+    else 
+    sys (
+        ((energy (- energy dist))
+         (hasToClean0 goClean0) 
+         (hasToClean1 goClean1) 
+         (hasToClean2 goClean2) 
+         (hasToClean3 goClean3) 
+        ) idle
+    )
+
+
+trans floor0
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (
+        ((energy (- energy dist))(select 0)) floor0
+        ((energy (- energy dist))(select 1)) floor1
+        ((energy (- energy dist))(select 2)) charge
+        ((energy (- energy dist))(select 3)) canIdle
+        ((energy (- energy dist))(select 4)) clean0
+    )
+
+trans floor1
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (
+        ((energy (- energy dist))(select 0)) floor0
+        ((energy (- energy dist))(select 1)) floor1
+        ((energy (- energy dist))(select 2)) floor2
+        ((energy (- energy dist))(select 3)) clean1
+    )
+
+trans floor2
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (
+        ((energy (- energy dist))(select 0)) floor1
+        ((energy (- energy dist))(select 1)) floor2
+        ((energy (- energy dist))(select 2)) floor3
+        ((energy (- energy dist))(select 3)) clean2
+        ((energy (- energy dist))(select 4)) trap
+    )
+ 
+trans floor3
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (
+        ((energy (- energy dist))(select 0)) floor2
+        ((energy (- energy dist))(select 1)) floor3
+        ((energy (- energy dist))(select 3)) clean2
+    )
+
+trans trap 
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (
+        ((energy (- energy dist))(select 0)) trap
+    )
+    
+trans charge
+    sys (
+        ((energy (+ energy 1.5))) charge
+        () floor0
+    )
+
+trans clean0
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (((energy (- energy dist))(hasToClean0 false)) floor0)
+
+trans clean1
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (((energy (- energy dist))(hasToClean1 false)) floor1)
+
+trans clean2
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (((energy (- energy dist))(hasToClean2 false)) floor2)
+
+trans clean3
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (((energy (- energy dist))(hasToClean3 false)) floor3)
+
+
+trans safe safe
+trans unsafe unsafe
+

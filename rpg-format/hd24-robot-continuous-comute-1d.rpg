@@ -1,0 +1,40 @@
+type Buechi
+
+input distx Real
+input ntx Real
+output tx Real
+output x Real
+
+loc moveZero 0
+loc moveTarg 0
+loc goal 1
+loc safe 1
+
+init moveZero
+
+trans moveZero
+    if (or (> distx 0.3) (< distx (- 0.3))) then safe else 
+    if (and (<= x 1.0) (>= x (- 1.0)))
+    then goal 
+    else sys (
+        () moveZero ; do nothing
+        ((x (+ (+ x distx) 1.0))) moveZero
+        ((x (- (+ x distx) 1.0))) moveZero 
+    )
+
+trans moveTarg
+    if (or (> distx 0.3) (< distx (- 0.3))) then safe else 
+    if (and (<= (- x tx) 1.0) (>= (- x tx) (- 1.0)))
+    then goal 
+    else sys (
+        () moveTarg ; do nothing
+        ((x (+ (+ x distx) 1.0))) moveTarg
+        ((x (- (+ x distx) 1.0))) moveTarg
+    )
+
+trans goal 
+    if (and (<= x 1.0) (>= x (- 1.0)))
+        then sys( ((tx ntx)) moveTarg )
+        else moveZero
+
+trans safe safe

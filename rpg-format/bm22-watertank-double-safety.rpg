@@ -1,0 +1,38 @@
+type Safety
+
+output x1 Real
+output x2 Real
+
+loc i 1
+loc work 1
+loc unsafe 0
+loc safe 1
+
+init i
+
+trans i
+    if (and (>= x1 0.2) (< x1 0.7) (>= x2 0.1) (< x2 0.7)) 
+        then work
+        else safe
+
+trans work
+    if (or (< x1 0.2) (>= x1 0.7) (< x2 0.1) (>= x2 0.7)) 
+        then unsafe else
+    
+    if (and (< x1 0.2) (< x2 0.2)) then 
+        sys (
+            ((x2 (* 0.9635 x2)) (x1 (+ x1 (* 0.0003 324.6753)))) work
+            ((x2 (* 0.9635 x2)) (x1 x1)) work
+        )    
+    else
+        sys (
+            (   (x2 (+ (* 0.7916 x2) (* 0.1719 x1))) 
+                (x1 (+ (* 0.8281 x1) (* 0.1719 x2)))
+            ) work
+            (   (x2 (+ (* 0.7916 x2) (* 0.1719 x1))) 
+                (x1 (+ (* 0.8281 x1) (* 0.1719 x2) (* 0.0003 324.6753)))
+            ) work
+        )
+
+trans safe safe
+trans unsafe unsafe

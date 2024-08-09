@@ -1,0 +1,75 @@
+type Buechi
+
+input dist Real 
+
+output energy Real
+output select BInt ; Works as an enum
+
+loc safe 1 
+loc unsafe 0
+
+loc idle 1
+loc charge 0
+loc floor0 0
+loc floor1 0
+loc floor2 0
+loc floor3 0
+loc trap 0 
+
+init charge
+
+trans idle
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys ( 
+        ((energy (- energy dist))(select 0)) idle
+        ((energy (- energy dist))(select 1)) floor0
+    )
+
+trans floor0
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (
+        ((energy (- energy dist))(select 0)) floor0
+        ((energy (- energy dist))(select 1)) floor1
+        ((energy (- energy dist))(select 2)) charge
+        ((energy (- energy dist))(select 3)) idle
+    )
+
+trans floor1
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (
+        ((energy (- energy dist))(select 0)) floor0
+        ((energy (- energy dist))(select 1)) floor1
+        ((energy (- energy dist))(select 2)) floor2
+    )
+
+trans floor2
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (
+        ((energy (- energy dist))(select 0)) floor1
+        ((energy (- energy dist))(select 1)) floor2
+        ((energy (- energy dist))(select 2)) floor3
+        ((energy (- energy dist))(select 3)) trap
+    )
+ 
+trans floor3
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (
+        ((energy (- energy dist))(select 0)) floor2
+        ((energy (- energy dist))(select 1)) floor3
+    )
+
+trans trap 
+    if(< energy 0.0) then unsafe else if (or (< dist 0.0) (> dist 1.0)) then safe else
+    sys (
+        ((energy (- energy dist))(select 0)) trap
+    )
+    
+trans charge
+    sys (
+        ((energy (+ energy 1.5))) charge
+        () floor0
+    )
+
+trans safe safe
+trans unsafe unsafe
+

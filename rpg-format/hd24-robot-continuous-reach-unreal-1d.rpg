@@ -1,0 +1,22 @@
+type Reach
+
+input distx Real
+
+output x Real
+
+loc move 0
+loc goal 1
+
+init move
+
+trans move
+    if (or (> distx 1.3) (< distx (- 1.3))) then goal else 
+    if (and (<= x 1.0) (>= x (- 1.0))) then goal 
+    else sys (
+        () move ; do nothing
+        ((x (+ (+ x distx) 1.0))) move 
+        ((x (- (+ x distx) 1.0))) move 
+    )
+
+trans goal goal
+
