@@ -1,0 +1,55 @@
+type Buechi
+
+output enabled BInt
+output temperature Real
+output blinds Real
+output light Bool
+output maximum Real
+output minimum Real
+
+input isSleeping Bool
+input isEmpty Bool
+input disturbance Real
+
+loc i 0
+loc disabled 0
+loc nightmode 1 
+loc nightmode_check 0
+loc lower_blinds 0 
+loc adjust_temperature 0
+
+init i
+
+trans i sys ( ((enabled 1)) nightmode )
+
+trans disabled if (= enabled 0) then disabled else nightmode
+
+trans nightmode
+    if (= enabled 0) then disabled else lower_blinds
+
+trans lower_blinds 
+    if (< blinds 1.0) 
+        then sys ( ((blinds (+ blinds 0.1))) lower_blinds
+                   ((blinds (- blinds 0.1))) lower_blinds)
+        else nightmode_check
+    
+trans nightmode_check
+    if isEmpty 
+        then sys ( ((light false)) adjust_temperature) 
+        else if isSleeping 
+            then sys ( ((light false) (maximum (+ minimum 2.0))) adjust_temperature) 
+            else sys ( ((light true) (maximum (+ minimum 2.0))) adjust_temperature) 
+
+trans adjust_temperature
+    if (and (> temperature (- maximum 2.0)) (< temperature maximum)) then nightmode else
+    if (or (> disturbance 0.3) (< disturbance (- 0.0 0.3))) 
+    then
+   ; This disturbance should simply not happen
+    sys ( ((temperature (+ temperature 1.0))) adjust_temperature
+          ((temperature (- temperature 1.0))) adjust_temperature
+        )
+    else
+    sys ( ((temperature (+ (+ temperature disturbance) 1.0))) adjust_temperature
+          ((temperature (- (+ temperature disturbance) 1.0))) adjust_temperature
+        )
+

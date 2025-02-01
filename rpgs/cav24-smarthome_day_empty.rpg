@@ -1,0 +1,48 @@
+type Buechi
+
+output enabled BInt
+output temperature Real
+output blinds Real
+output light Bool
+output maximum Real
+
+input isEmpty Bool
+input disturbance Real
+
+loc i 0
+loc disabled 0
+loc daymode 1 
+loc empty_lower_blinds 0 
+loc empty_lower_temperature 0
+
+init i
+
+trans i sys ( ((enabled 1)) daymode )
+
+trans disabled if (= enabled 0) then disabled else daymode
+
+trans daymode
+    if (= enabled 0) then disabled else
+    if isEmpty then sys ( ((light false)) empty_lower_blinds) else 
+    daymode
+
+trans empty_lower_blinds 
+    if (< blinds 1.0) 
+        then sys ( ((blinds (+ blinds 0.1))) empty_lower_blinds
+                   ((blinds (- blinds 0.1))) empty_lower_blinds)
+        else empty_lower_temperature
+
+
+trans empty_lower_temperature
+    if (and (> temperature (- maximum 2.0)) (< temperature maximum)) then daymode else
+    if (or (> disturbance 0.3) (< disturbance (- 0.0 0.3))) 
+    then
+   ; This disturbance should simply not happen
+    sys ( ((temperature (+ temperature 1.0))) empty_lower_temperature
+          ((temperature (- temperature 1.0))) empty_lower_temperature
+        )
+    else
+    sys ( ((temperature (+ (+ temperature disturbance) 1.0))) empty_lower_temperature
+          ((temperature (- (+ temperature disturbance) 1.0))) empty_lower_temperature
+        )
+

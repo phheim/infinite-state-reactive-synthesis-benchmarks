@@ -1,0 +1,56 @@
+input b1 Real
+input b2 Real
+input b3 Real
+input b4 Real
+input b5 Real
+
+output c1 BReal
+output c2 BReal
+output c3 BReal
+output c4 BReal
+output c5 BReal
+
+type Safety
+
+loc i 1
+loc fill 1
+loc empty 1
+loc unsafe 0
+loc safe 1
+
+
+init i
+
+trans i
+    sys ( ((c1 0.0) (c2 0.0) (c3 0.0) (c4 0.0) (c5 0.0)) fill )
+
+trans fill
+    if (or 
+        (< 1.0 (+ b1 b2 b3 b4 b5)) 
+        (< b1 0.0) (< b2 0.0) (< b3 0.0) (< b4 0.0) (< b5 0.0)) 
+    then safe 
+    else sys ((
+        (c1 (+ c1 b1))     
+        (c2 (+ c2 b2))     
+        (c3 (+ c3 b3))     
+        (c4 (+ c4 b4))     
+        (c5 (+ c5 b5))     
+    ) empty)
+
+trans empty
+    if (or 
+            (< c1 0.0) (< c2 0.0) (< c3 0.0) (< c4 0.0) (< c5 0.0)
+            (> c1 1.9) (> c2 1.9) (> c3 1.9) (> c4 1.9) (> c5 1.9)
+        )
+    then unsafe
+    else sys (
+        ((c1 0.0) (c2 0.0)) fill
+        ((c2 0.0) (c3 0.0)) fill
+        ((c3 0.0) (c4 0.0)) fill
+        ((c4 0.0) (c5 0.0)) fill
+        ((c5 0.0) (c1 0.0)) fill
+    )
+
+trans safe safe
+trans unsafe unsafe
+
