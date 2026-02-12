@@ -8,6 +8,7 @@ The current benchmark files where created in the following papers:
 * Philippe Heim, Rayna Dimitrova: [*Solving Infinite-State Games via Acceleration*](https://doi.org/10.1145/3632899), POPL 2024
 * Anne-Kathrin Schmuck, Philippe Heim, Rayna Dimitrova, Satya Prakash Nayak: [*Localized Attractor Computations for Infinite-State Games*](https://doi.org/10.1007/978-3-031-65633-0_7), CAV 2024
 * Philippe Heim, Rayna Dimitrova: [*Translation of Temporal Logic for Efficient Infinite-State Reactive Synthesis*](https://doi.org/10.1145/3704888), POPL 2025
+* Philippe Heim, Rayna Dimitrova: [* Modular Attractor Acceleration in Infinite-State Games *], TACAS 2026
 
 Note that the specific benchmark idea might come from a different sources. 
 

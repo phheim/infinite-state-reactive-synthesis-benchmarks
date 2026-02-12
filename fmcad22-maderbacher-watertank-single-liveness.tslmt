@@ -1,0 +1,16 @@
+var Real r_x
+
+SPECIFICATION
+
+assume {
+gte r_x r0.0() && !(gte r_x r0.7());
+}
+
+always guarantee {
+gte r_x r0.0();   /* INV */
+!(gte r_x r0.7()); /* INV */
+
+[r_x <- mul r0.9635() r_x] || [r_x <- add (mul r0.9635() r_x) r0.1()];
+
+!(gte r_x r0.1()) -> F (gte r_x r0.4());
+}

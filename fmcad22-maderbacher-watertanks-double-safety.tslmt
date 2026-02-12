@@ -1,0 +1,27 @@
+var Real r_x1
+var Real r_x2
+
+SPECIFICATION
+
+
+assume {
+gte r_x1 r0.2() && lt r_x1 r0.7();
+gte r_x2 r0.1() && lt r_x2 r0.7();
+}
+
+always guarantee {
+gte r_x1 r0.1();   /* INV */
+lt r_x1 r0.7(); /* INV */
+gte r_x2 r0.1();   /* INV */
+lt r_x2 r0.7(); /* INV */
+
+(lt r_x1 r0.2() && lt r_x2 r0.2()) -> 
+  (([r_x1 <- r_x1] ||
+    [r_x1 <- add r_x1 (mul r0.0003() r324.6753())]) &&
+  [r_x2 <- mul r0.9635() r_x2]);
+(!(lt r_x1 r0.2()) || !(lt r_x2 r0.2())) -> 
+  (([r_x1 <- add (mul r0.8281() r_x1) (mul r0.1719() r_x2)] ||
+    [r_x1 <- add (add (mul r0.8281() r_x1) (mul r0.1719() r_x2)) (mul r0.0003() r324.6753())]) &&
+  [r_x2 <- add (mul r0.7916() r_x2) (mul r0.1719() r_x1)]);
+
+}
