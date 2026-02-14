@@ -1,0 +1,44 @@
+input int nx
+input int ny
+
+state int size
+
+state int x
+state int y
+state int tx
+state int ty
+
+def atTarget = [x = tx] && [y = ty]
+
+def move = ([x' = x + 1] && [y' = y]) || ([x' = x] && [y' = y]) || ([x' = x - 1] && [y' = y]) || ([y' = y + 1] && [x' = x]) || ([y' = y - 1] && [x' = x])
+def updateTarget = [tx' = nx] && [ty' = ny]
+
+def validInitialState = [0 <= x] && [x <= size+1] && [0 <= tx] && [tx <= size+1] && [0 <= y] && [y <= size+1] && [0 <= ty] && [ty <= size+1] && !([x > 1] && [y > 1]) && !([tx > 1] && [ty > 1]) && [size > 0]
+def safeState = [x >= 0] && [x <= size+1] && [y >= 0] && [y <= size+1] && !([x > 1] && [y > 1]) && !([tx > 1] && [ty > 1])
+def validEnvInput = [nx >= 0] && [nx <= size+1] && [ny >= 0] && [ny <= size+1] && !([nx > 1] && [ny > 1])
+
+formula {
+    assert G F atTarget
+ }
+
+
+game Safety from linit {
+    loc linit 1
+    loc run 1
+    loc target 1
+    loc done 1
+    loc err 0
+    
+    from linit to done with !validInitialState
+    from linit to run with validInitialState && keep(x y tx ty size)
+    from run to done with !validEnvInput
+    from run to err with !safeState
+
+    from run to run with !atTarget && move && keep(tx ty size)
+    from run to target with atTarget && keep(x y tx ty size)
+    from target to run with validEnvInput && updateTarget && keep(x y size)
+    from target to done with !validEnvInput
+
+    from done to done with true 
+    from err to err with keep(x y tx ty size)
+}

@@ -1,0 +1,74 @@
+input int delivery1
+input int delivery2
+input int efficiency
+
+state int usage1
+state int usage2
+state int usage3
+
+state int consumer1
+state int consumer2
+state int consumer3
+state int depot1
+state int depot2
+
+
+def full = [consumer1 = usage1] && [consumer2 = usage2] && [consumer3 = usage3]
+
+
+def validInitialState = [usage1 >= 1] && [usage2 >= 1] && [usage3 >= 1] &&
+                        [consumer1 = usage1] && [consumer2 = usage2] && 
+                        [consumer3 = usage3] && [depot1 = usage1 + usage2] &&
+                        [depot2 = usage3]
+def safeState = [consumer1 >= 0] && [consumer1 <= usage1+2] &&
+                [consumer2 >= 0] && [consumer2 <= usage2+2] && 
+                [consumer3 >= 0] && [consumer3 <= usage3+2] &&
+                [depot1 >= 0] && [depot1 <= usage1 + usage2 + 2] &&
+                [depot1 + consumer1 + consumer2 >= usage1 + usage2] &&
+                [depot2 >= 0] && [depot2 <= usage3 + 2] &&
+                [depot2 + consumer3 >= usage3]
+
+def validEnvInput = [delivery1 >= usage1 + usage2] && 
+                    [delivery1 <= usage1 + usage2 + 2] &&
+                    [delivery2 >= usage3] && 
+                    [delivery2 <= usage3 + 2] &&
+                    [efficiency >= 0] && [efficiency <= 1]
+def movesNotFull = ([consumer1' = consumer1 + 1] && [consumer2' = consumer2] &&
+                    [consumer3' = consumer3] && [depot1' = depot1 - 1] && [depot2' = depot2]) || 
+                   ([consumer1' = consumer1] && [consumer2' = consumer2 + 1] &&
+                    [consumer3' = consumer3] && [depot1' = depot1 - 1] && [depot2' = depot2]) || 
+                   ([consumer1' = consumer1] && [consumer2' = consumer2] &&
+                    [consumer3' = consumer3 + 1] && [depot1' = depot1] && [depot2' = depot2 - 1])
+
+def moveFull = ([consumer1' = consumer1 - usage1 + efficiency] && 
+                [consumer2' = consumer2 - usage2 + efficiency] &&
+                [consumer3' = consumer3 - usage3 + efficiency] &&
+                [depot1' = delivery1] && [depot2' = delivery2])
+           
+
+
+formula {
+    assert G F full
+ }
+
+
+game Safety from linit {
+    loc linit 1
+    loc run 1
+    loc target 1
+    loc done 1
+    loc err 0
+    
+    from linit to done with !validInitialState
+    from linit to run with validInitialState && keep(consumer1 consumer2 consumer3 depot1 depot2 usage1 usage2 usage3)
+    from run to done with !validEnvInput
+    from run to err with !safeState
+
+    from run to run with !full && movesNotFull && keep(usage1 usage2 usage3)
+    from run to target with full && keep(consumer1 consumer2 consumer3 depot1 depot2 usage1 usage2 usage3)
+    from target to run with validEnvInput && moveFull && keep(usage1 usage2 usage3)
+    from target to done with !validEnvInput
+
+    from done to done with true 
+    from err to err with keep(consumer1 consumer2 consumer3 depot1 depot2 usage1 usage2 usage3)
+}

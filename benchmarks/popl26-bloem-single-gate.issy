@@ -1,0 +1,32 @@
+input bool gate
+
+state int x
+state int min
+state int max
+
+formula {
+    assume G F [gate]
+    assert G F [x = min]
+    assert G F [x = max]
+ }
+
+def validInitialState = [min + 3 < max] && [x >= min+1] && [x <= max-1]
+def safeState = [x >= min] && [x <= max]
+def validEnvInput = gate || !gate
+def move = ((!gate && ![x = min + 1] || gate) && [x' = x + 1]) || ((!gate && ![x = min + 1] || gate) && [x' = x - 1]) || [x' = x]
+
+game Safety from linit {
+    loc linit 1
+    loc run 1
+    loc done 1
+    loc err 0
+   
+    from linit to done with !validInitialState
+    from linit to run with validInitialState && keep(x min max)
+    from run to done with !validEnvInput
+    from run to err with !safeState
+    from run to run with safeState && move && keep(min max)
+
+    from done to done with true 
+    from err to err with keep(x min max)
+ } 

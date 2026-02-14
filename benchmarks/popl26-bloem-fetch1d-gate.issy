@@ -1,0 +1,43 @@
+input int nx
+input bool gate
+
+state int size
+
+state int x
+state int tx
+
+def atTarget = [x = tx]
+
+def move = ((gate && [x = size-1] || ![x = size-1]) && [x' = x + 1]) || ((gate && [x = size] || ![x = size]) && [x' = x - 1]) || [x' = x]
+def updateTarget = [tx' = nx]
+
+def validInitialState = [0 <= x] && [x <= size] && [0 <= tx] && [tx <= size] && [size >= 1]
+def safeState = [x >= 0] && [x <= size]
+def validEnvInput = [nx >= 0] && [nx <= size]
+
+formula {
+    assume G F gate
+    assert G F atTarget
+ }
+
+
+game Safety from linit {
+    loc linit 1
+    loc run 1
+    loc target 1
+    loc done 1
+    loc err 0
+    
+    from linit to done with !validInitialState
+    from linit to run with validInitialState && keep(x tx size)
+    from run to done with !validEnvInput
+    from run to err with !safeState
+
+    from run to run with !atTarget && move && keep(tx size)
+    from run to target with atTarget && keep(x tx size)
+    from target to run with validEnvInput && updateTarget && keep(x size)
+    from target to done with !validEnvInput
+
+    from done to done with true 
+    from err to err with keep(x tx size)
+}
